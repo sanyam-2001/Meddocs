@@ -17,7 +17,8 @@ const loginUser = async (email, password) => {
         statusCode: 200,
         error: null,
         data: {
-            UID: jwt.sign(userDetails.docs[0].id, process.env.JWT_SECRET),
+            token: jwt.sign(userDetails.docs[0].id, process.env.JWT_SECRET),
+            UID: userDetails.docs[0].id,
             email,
             verified: userDetails.docs[0].data().verified
         }

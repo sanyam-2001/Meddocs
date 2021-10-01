@@ -1,38 +1,34 @@
-const { db, bucket } = require("../Config/firebase.config");
-const updateUser = async (data, UID = "eOJrEip94eAJneGTkOAL") => {
-  if (data.type == "D") {
-    db.collection("users").add({
+const { db } = require("../Config/firebase.config");
+const updateUser = async (data, UID) => {
+  if (data.type === "D") {
+    await db.collection("users").doc(UID).update({
       SRID: data.SRID,
       age: data.age,
-      email: data.email,
-      experience: data.experience,
-      gender: gender.experience,
+      experience: data.experience || null,
+      gender: data.gender,
       mobile: data.mobile,
       name: data.name,
       qualifications: data.qualifications,
-      speciality: data.speciality,
-      type: data.type,
+      speciality: data.speciality || [],
+      type: "D"
     });
-  } else if (data.type == "P") {
-    db.collection("users").add({
-      aadhar: db.aadhar,
-      age: db.age,
-      bloodType: db.bloodType,
-      email: db.email,
-      gender: db.gender,
-      medicalData: db.medicalData,
-      mobile: db.mobile,
-      name: db.name,
-      signedIn: db.signedIn,
-      type: db.type,
+  } else if (data.type === "P") {
+    await db.collection("users").doc(UID).update({
+      aadhar: data.aadhar,
+      age: data.age,
+      bloodType: data.bloodType || null,
+      gender: data.gender,
+      mobile: data.mobile,
+      name: data.name,
+      type: "P"
     });
-  } else {
-    db.collection("users").add({
-      email: db.email,
-      password: db.password,
-      signedIn: db.signedIn,
-      verified: db.verified,
-    });
+  }
+  const response = await db.collection('users').doc(UID).get();
+  
+  return{
+    statusCode: 200,
+    error: null,
+    data: response.data()
   }
 };
 

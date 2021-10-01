@@ -32,7 +32,8 @@ const createUser = async (email, password) => {
         statusCode: 200,
         error: null,
         data: {
-            UID: jwt.sign(savedUser._path.segments[1], process.env.JWT_SECRET),
+            token: jwt.sign(savedUser._path.segments[1], process.env.JWT_SECRET),
+            UID: savedUser._path.segments[1],
             email,
             verified: false
         }
