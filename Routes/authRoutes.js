@@ -14,7 +14,6 @@ router.post('/login', async (req, res) => {
     const {email, password} = req.body;
     const response = await loginUser(email, password);
     res.json(response)
-})
-
+});
 
 module.exports = router;
