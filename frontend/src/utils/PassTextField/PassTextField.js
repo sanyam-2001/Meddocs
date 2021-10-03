@@ -15,9 +15,9 @@ const PassTextField = (props) => {
                 endAdornment:
                     <InputAdornment position="end">
                         <IconButton
-                            onClick={() => setType(type == "text" ? "password" : "text")}
+                            onClick={() => setType(type === "text" ? "password" : "text")}
                         >
-                            {type == "text" ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            {type === "text" ? <VisibilityIcon /> : <VisibilityOffIcon />}
                         </IconButton>
                     </InputAdornment>
             }}

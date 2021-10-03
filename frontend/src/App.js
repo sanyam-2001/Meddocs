@@ -6,10 +6,11 @@ import Register from './pages/auth/Register/Register';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
+import Dashboard from './pages/Dashboard/Dashboard';
 const hist = createBrowserHistory();
 
 axios.interceptors.request.use(async (config) => {
-  if (localStorage.token) {
+  if (localStorage.getItem('token')) {
     config.headers = {
       ...config.headers,
       "Authorization": 'BEARER ' + localStorage.getItem("token")
@@ -24,7 +25,6 @@ axios.interceptors.response.use(
   },
   error => {
     console.log(error)
-    const { status } = error.response;
     // localStorage.clear();
     // window.location.replace("/login")
     console.log('login')
@@ -50,6 +50,7 @@ function App() {
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
+          <Route exact path="/dashboard" component={Dashboard}/>
           <Redirect from="/" to="/login" />
         </Switch>
       </Router>

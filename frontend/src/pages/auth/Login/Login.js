@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import Button from '@mui/material/Button';
 import { toast } from 'react-toastify'
 import axios from 'axios'
@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import PassTextField from '../../../utils/PassTextField/PassTextField'
 import styles from './Login.module.css'
 const Login = () => {
+    const history = useHistory();
     const [formData, setFormData] = React.useState({
         email: '',
         password: '',
@@ -37,27 +38,31 @@ const Login = () => {
             setLoading(true);
             axios({
                 method: "post",
-                url: "http://localhost:5000/api/v1/auth/login",
+                url: "/auth/login",
                 data: {
                     ...formData,
                 }
             }).then(res => {
                 console.log(res);
                 if (res.data.statusCode === 200) {
-
+                    toast('Login')
                     localStorage.setItem("token", res.data.data.token)
                     localStorage.setItem('uuid', res.data.data.UID)
-
+                    history.push('/dashboard')
                 }
                 else {
-                    return toast(res.data.error[0], {
-                        autoClose: 3000,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                    })
+                    if(res.data.error){
+                        res.data.error.forEach(e=>{
+                            toast(e);
+                        })
+                    }
+                    else{
+                        toast('Server Error')
+                    }
                 }
                 setLoading(false);
             }).catch(err => {
+                console.log(err);
                 return toast('Some error occured in approved Api.', {
                     autoClose: 3000,
                     hideProgressBar: true,
@@ -78,7 +83,7 @@ const Login = () => {
                     className={styles.textField}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    error={formError.email}
+                    error={formError.email?true:false}
                     helperText={formError.email}
                 />
 
@@ -89,7 +94,7 @@ const Login = () => {
                     className={styles.textField}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    error={formError.password}
+                    error={formError.password?true:false}
                     helperText={formError.password}
                 />
                 <Button variant="contained" onClick={onSubmit}>Login</Button>

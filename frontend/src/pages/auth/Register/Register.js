@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import Button from '@mui/material/Button';
 import { toast } from 'react-toastify'
 import axios from 'axios'
@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import PassTextField from '../../../utils/PassTextField/PassTextField'
 import styles from './Register.module.css'
 const Register = () => {
+    const history = useHistory();
     const [formData, setFormData] = React.useState({
         email: '',
         password: '',
@@ -21,6 +22,7 @@ const Register = () => {
     const validate = () => {
         let value = true;
         let err = { email: false, password: false }
+        //eslint-disable-next-line
         let isEmail = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
         setFormError({ ...err });
         if (formData.password.length < 6) {
@@ -45,30 +47,35 @@ const Register = () => {
         if (validate()) {
             setLoading(true);
             axios({
-                method: "post",
-                url: "http://localhost:5000/api/v1/auth/signup",
+                method: "POST",
+                url: "/auth/signup",
                 data: {
                     ...formData,
                 }
             }).then(res => {
-                console.log(res);
-                if (res.data.statusCode === 201) {
-                    localStorage.setItem("token", res.data.accessToken)
-
+                if (res.data.statusCode === 200) {
+                    toast('Signed Up')
+                    localStorage.setItem("token", res.data.data.token)
+                    localStorage.setItem('uuid', res.data.data.UID)
+                    history.push('/dashboard')
                 } else {
-                    return toast(res.data.error[0], {
-                        autoClose: 3000,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                    })
+                    if(res.data.error){
+                        res.data.error.forEach(e=>{
+                            toast(e);
+                        })
+                    }
+                    else{
+                        toast('Server Error')
+                    }
                 }
                 setLoading(false);
             }).catch(err => {
-                return toast('Some error occured in approved Api.', {
-                    autoClose: 3000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                })
+                if(err){
+                    toast(err);
+                }
+                else{
+                    toast('Server Error')
+                }
             });
         }
     }
@@ -84,7 +91,7 @@ const Register = () => {
                     className={styles.textField}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    error={formError.email}
+                    error={formError.email?true:false}
                     helperText={formError.email}
                 />
 
@@ -95,7 +102,7 @@ const Register = () => {
                     className={styles.textField}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    error={formError.password}
+                    error={formError.password?true:false}
                     helperText={formError.password}
                 />
                 <PassTextField
@@ -105,7 +112,7 @@ const Register = () => {
                     className={styles.textField}
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    error={formError.confirmPassword}
+                    error={formError.confirmPassword?true:false}
                     helperText={formError.confirmPassword}
                 />
 
